@@ -32,32 +32,31 @@ data Mac =
 data Authorization = Authorization
     { id' :: ID
     , ts :: TS
-    -- , nonce :: Nonce
-    -- , ext :: Maybe Ext
-    -- , mac :: Mac
+    , nonce :: Nonce
+    , ext :: Maybe Ext
+    , mac :: Mac
     } deriving (Eq,Show)
 
 plainText = inClass "a-zA-Z0-9"
 
 padded x = skipMany space *> x <* skipMany space
 
-idParser :: Parser ID
-idParser = ID <$> padded (string "id=" *> takeWhile1 plainText)
+idP :: Parser ID
+idP = ID <$> padded (string "id=" *> takeWhile1 plainText)
 
-tsParser :: Parser TS
-tsParser = TS <$> padded (string "ts=" *> (toInteger <$> decimal))
+tsP :: Parser TS
+tsP = TS <$> padded (string "ts=" *> (toInteger <$> decimal))
 
-nonceParser :: Parser Nonce
-nonceParser = Nonce <$> padded (string "nonce=" *> takeWhile1 plainText)
+nonceP :: Parser Nonce
+nonceP = Nonce <$> padded (string "nonce=" *> takeWhile1 plainText)
 
-extParser :: Parser Ext
-extParser = Ext <$> padded (string "ext=" *> takeWhile1 plainText)
+extP :: Parser Ext
+extP = Ext <$> padded (string "ext=" *> takeWhile1 plainText)
 
-macParser :: Parser Mac
-macParser = Mac <$> padded (string "mac=" *> takeWhile1 plainText)
+macP :: Parser Mac
+macP = Mac <$> padded (string "mac=" *> takeWhile1 plainText)
 
-authParser :: Parser Authorization
-authParser = go idParser [tsParser, nonceParser, extParser, macParser]
-  go x ys =
-  -- try idParser ()
-  Authorization <$> idParser <*> tsParser -- <*> nonceParser <*> maybe extParser <*> macParser
+authP :: Parser Authorization
+authP = Authorization <$> idP <*> tsP <*> nonceP <*> maybeExtP <*> macP
+  where
+    maybeExtP = option Nothing (Just <$> extP)
