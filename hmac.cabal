@@ -21,7 +21,7 @@ library
                      , attoparsec
                      , base >=4.8 && <4.9
                      , bytestring
-                     , bytestring >= 0.10.6.0
+                     , bytestring
                      , conduit
                      , cryptohash
                      , http-conduit
