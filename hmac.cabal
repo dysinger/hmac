@@ -26,6 +26,7 @@ library
                      , cryptohash
                      , http-conduit
                      , http-types
+                     , mtl
                      , persistent
                      , persistent-postgresql
                      , wai
