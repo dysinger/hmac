@@ -6,7 +6,7 @@ import           Data.Attoparsec.ByteString.Char8
 import qualified Data.Attoparsec.ByteString.Char8 as A
 import           Network.HMAC.Types
 
-plainText = inClass "a-zA-Z0-9"
+plainText = inClass "a-zA-Z0-9+/="
 
 padded x = skipMany space *> x <* skipMany space
 
