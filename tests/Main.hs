@@ -84,8 +84,9 @@ tsParserSpec = do
                   it "ts value should be an integer" $
                       do ("ts=123" :: B.ByteString) ~> tsP `shouldParse`
                              (TS 123)
-                  -- it "should fail to parse numbers with leading zeros" $
-                  --     do 1 `shouldBe` 1
+-- TODO: update the parser to fail on zero-padded ts values
+               -- it "should fail to parse numbers with leading zeros" $
+               --     do 1 `shouldBe` 1
 
 nonceParserSpec :: IO TestTree
 nonceParserSpec = do
@@ -163,3 +164,22 @@ authHeaderParserSpec =
                              (Nonce "298")
                              (Just (Ext "lol"))
                              (Mac "eff")
+-- TODO: We have to figure out how to parse k/v data in any order as
+-- per the spec
+           -- it "auth header attributes can be in any order" $
+           --     do ("ext=lol nonce=298 mac=eff ts=837 id=heh" :: B.ByteString) ~>
+           --            authP `shouldParse`
+           --            Authorization
+           --                (ID "heh")
+           --                (TS 837)
+           --                (Nonce "298")
+           --                (Just (Ext "lol"))
+           --                (Mac "eff")
+           --        ("ts=837 id=heh nonce=298 mac=eff ext=lol" :: B.ByteString) ~>
+           --            authP `shouldParse`
+           --            Authorization
+           --                (ID "heh")
+           --                (TS 837)
+           --                (Nonce "298")
+           --                (Just (Ext "lol"))
+           --                (Mac "eff")
