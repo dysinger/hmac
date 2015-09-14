@@ -6,7 +6,8 @@ import           Test.Hspec
 import           Test.Hspec.Attoparsec
 import           Test.Tasty
 import           Test.Tasty.Hspec
-import           Network.HMAC
+import           Network.HMAC.Parse
+import           Network.HMAC.Types
 
 main :: IO ()
 main = do
