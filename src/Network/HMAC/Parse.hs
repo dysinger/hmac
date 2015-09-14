@@ -1,29 +1,44 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RankNTypes #-}
 
 module Network.HMAC.Parse where
 
-import           Data.Attoparsec.ByteString.Char8
-import qualified Data.Attoparsec.ByteString.Char8 as A
-import           Network.HMAC.Types
+import Data.Attoparsec.ByteString
+import Data.Attoparsec.ByteString.Char8 (char, decimal, space)
+import Data.ByteString (ByteString)
+import Network.HMAC.Types
 
-plainText = inClass "a-zA-Z0-9+/="
+plainTextP :: Parser ByteString
+plainTextP = takeWhile1 (inClass "a-zA-Z0-9+/=")
+             -- TODO comparing Word8 #s is "faster"
 
-padded x = skipMany space *> x <* skipMany space
+attributeP
+    :: forall a.
+       ByteString -> Parser a -> Parser a
+attributeP key valP =
+    skipMany space *>
+    string key *> char '=' *> quoteP *> valP <* quoteP
+    <* skipMany space
+  where
+    quoteP = option () (skip isQuote)
+    isQuote = (==) 34
 
 idP :: Parser ID
-idP = ID <$> padded (string "id=" *> takeWhile1 plainText)
+idP = ID <$> (attributeP "id" plainTextP)
 
 tsP :: Parser TS
-tsP = TS <$> padded (string "ts=" *> (toInteger <$> decimal))
+tsP = TS <$> (attributeP "ts" decimalP)
+  where
+    decimalP = toInteger <$> decimal
 
 nonceP :: Parser Nonce
-nonceP = Nonce <$> padded (string "nonce=" *> takeWhile1 plainText)
+nonceP = Nonce <$> (attributeP "nonce" plainTextP)
 
 extP :: Parser Ext
-extP = Ext <$> padded (string "ext=" *> takeWhile1 plainText)
+extP = Ext <$> (attributeP "ext" plainTextP)
 
 macP :: Parser Mac
-macP = Mac <$> padded (string "mac=" *> takeWhile1 plainText)
+macP = Mac <$> (attributeP "mac" plainTextP)
 
 authP :: Parser Authorization
 authP = Authorization <$> idP <*> tsP <*> nonceP <*> maybeExtP <*> macP
