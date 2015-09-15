@@ -5,6 +5,26 @@ module Network.HMAC.Types where
 
 import Data.ByteString
 
+data AuthAttrKey
+    = IdKey
+    | TsKey
+    | NonceKey
+    | ExtKey
+    | MacKey
+    deriving (Enum,Eq,Ord,Show)
+
+data AuthAttrVal
+    = IdVal { idVal :: ByteString }
+    | TsVal { tsVal :: Integer }
+    | NonceVal { nonceVal :: ByteString }
+    | ExtVal { extVal :: ByteString }
+    | MacVal { macVal :: ByteString }
+    deriving (Eq,Show)
+
+type AuthAttribute = (AuthAttrKey, AuthAttrVal)
+
+type AuthHeader = [AuthAttribute]
+
 data ID =
     ID ByteString
     deriving (Eq,Show)
@@ -25,7 +45,7 @@ data Mac =
     Mac ByteString
     deriving (Eq,Show)
 
-data Authorization = Authorization
+data Auth = Auth
     { id' :: ID
     , ts :: TS
     , nonce :: Nonce

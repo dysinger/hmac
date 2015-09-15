@@ -25,6 +25,7 @@ library
                      , bytestring
                      , bytestring
                      , conduit
+                     , containers
                      , cryptohash
                      , http-conduit
                      , http-types
